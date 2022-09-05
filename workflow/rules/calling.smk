@@ -14,17 +14,17 @@ rule deepvariant_gvcf:
         ),
         ref=config['ref']['fasta'],
     output:
-        gvcfs=lambda w: expand(
-            "results/mapped/{sample}.g.vcf.gz",
-            sample=joint_calling_group_lists.loc[w.joint_calling_group],
-        ),
-        vcfs=lambda w: expand(
-            "results/mapped/{sample}.vcf.gz",
-            sample=joint_calling_group_lists.loc[w.joint_calling_group],
-        ),
-        scratch=temp(
-            directory("results/all_group_samples_joint_calls/{joint_calling_group}_interm")
-        ),
+        # gvcfs=lambda w: expand(
+        #     "results/mapped/{sample}.g.vcf.gz",
+        #     sample=joint_calling_group_lists.loc[w.joint_calling_group],
+        # ),
+        # vcfs=lambda w: expand(
+        #     "results/mapped/{sample}.vcf.gz",
+        #     sample=joint_calling_group_lists.loc[w.joint_calling_group],
+        # ),
+        scratch=directory("results/all_group_samples_joint_calls/{joint_calling_group}_interm"),
+        vcfs=directory("results/all_group_samples_joint_calls/{joint_calling_group}_vcf"),
+        gvcfs=directory("results/all_group_samples_joint_calls/{joint_calling_group}_gvcf"),
     params:
         config=config["glnexus"]["config"],
     threads: config["glnexus"]["threads"]
@@ -39,17 +39,17 @@ rule deepvariant_gvcf:
         "--reads_child {input.bams[0]} "
         "--reads_parent1 {input.bams[1]} "
         "--reads_parent2 {input.bams[2]} "
-        "--output_vcf_child {output.vcf[0]} "
-        "--output_vcf_parent1 {output.vcf[1]} "
-        "--output_vcf_parent2 {output.vcf[2]} "
+        "--output_vcf_child {output.vcfs} "
+        "--output_vcf_parent1 {output.vcfs} "
+        "--output_vcf_parent2 {output.vcfs} "
         "--sample_name_child {input.samples[0]} "
         "--sample_name_parent1 {input.samples[1]} "
         "--sample_name_parent2 {input.samples[2]} "
         "--num_shards {threads}  "
         "--intermediate_results_dir {output.scratch} "
-        "--output_gvcf_child {output.gvcf[0]} "
-        "--output_gvcf_parent1 {output.gvcf[1]} "
-        "--output_gvcf_parent2 {output.gvcf[2]} "
+        "--output_gvcf_child {output.gvcfs} "
+        "--output_gvcf_parent1 {output.gvcfs} "
+        "--output_gvcf_parent2 {output.gvcfs} "
         
 
 
