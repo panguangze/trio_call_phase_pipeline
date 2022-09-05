@@ -151,14 +151,6 @@ rule bcftools_merge:
         ],
         idxs=[
             *expand(
-                "results/calls/{sample}.vcf.gz.csi",
-                sample=(
-                    samples.loc[
-                        ~samples.sample_id.isin(joint_calling_groups.sample_id)
-                    ].sample_id.unique()
-                ),
-            ),
-            *expand(
                 "results/individual_calls/{sample}.vcf.gz.csi",
                 sample=(
                     samples.loc[
