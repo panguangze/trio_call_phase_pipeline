@@ -49,7 +49,7 @@ rule deepvariant_gvcf:
         "--intermediate_results_dir {output.scratch} "
         "--output_gvcf_child {output.gvcf[0]} "
         "--output_gvcf_parent1 {output.gvcf[1]} "
-        "--output_gvcf_parent2 {output.gvcf[2]}"
+        "--output_gvcf_parent2 {output.gvcf[2]} "
         
 
 
