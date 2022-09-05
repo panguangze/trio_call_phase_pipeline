@@ -2,8 +2,8 @@ rule deepvariant:
     input:
         bam=rules.samtools_merge.output.bam,
         idx=rules.samtools_merge.output.idx,
-        ref=rules.get_genome.output,
-        ref_idx=rules.genome_faidx.output,
+        ref=config['ref']['fasta'],
+        ref_idx=config['ref']['idx'],
     output:
         vcf="results/calls/{sample}.vcf.gz",
         report=report(
@@ -25,8 +25,8 @@ rule deepvariant_gvcf:
     input:
         bam=rules.samtools_merge.output.bam,
         idx=rules.samtools_merge.output.idx,
-        ref=rules.get_genome.output,
-        ref_idx=rules.genome_faidx.output,
+        ref=config['ref']['fasta'],
+        ref_idx=config['ref']['idx'],
     output:
         vcf="results/individual_calls/{sample}.vcf.gz",
         report=report(

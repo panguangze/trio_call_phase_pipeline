@@ -1,7 +1,7 @@
 rule map_reads:
     input:
         reads=get_trimmed_reads,
-        idx=get_bwa_index,
+        idx=config['ref']['bwa_index'],
     output:
         temp("results/mapped/{sample}-{unit}.sorted.bam"),
         temp("results/mapped/{sample}-{unit}.sorted.bam.csi"),
