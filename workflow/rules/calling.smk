@@ -14,17 +14,11 @@ rule deepvariant_gvcf:
         ),
         ref=config['ref']['fasta'],
     output:
-        # gvcfs=lambda w: expand(
-        #     "results/mapped/{sample}.g.vcf.gz",
-        #     sample=joint_calling_group_lists.loc[w.joint_calling_group],
-        # ),
-        # vcfs=lambda w: expand(
-        #     "results/mapped/{sample}.vcf.gz",
-        #     sample=joint_calling_group_lists.loc[w.joint_calling_group],
-        # ),
+        gvcfs="results/mapped/{sample}.g.vcf.gz",
+        vcfs="results/mapped/{sample}.vcf.gz",
         scratch=directory("results/all_group_samples_joint_calls/{joint_calling_group}_interm"),
-        vcfs=directory("results/all_group_samples_joint_calls/{joint_calling_group}_vcf"),
-        gvcfs=directory("results/all_group_samples_joint_calls/{joint_calling_group}_gvcf"),
+        # vcfs=directory("results/all_group_samples_joint_calls/{joint_calling_group}_vcf"),
+        # gvcfs=directory("results/all_group_samples_joint_calls/{joint_calling_group}_gvcf"),
     params:
         config=config["glnexus"]["config"],
     threads: config["glnexus"]["threads"]
