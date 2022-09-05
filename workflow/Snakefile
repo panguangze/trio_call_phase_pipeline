@@ -11,7 +11,7 @@ report: "report/workflow.rst"
 rule all:
     input:
         "results/merged_calls/all.vcf.gz",
-        "results/qc/multiqc.html",
+        # "results/qc/multiqc.html",
 
 
 include: "rules/common.smk"
