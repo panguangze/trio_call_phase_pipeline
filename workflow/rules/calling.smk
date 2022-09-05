@@ -59,8 +59,13 @@ rule deepvariant_gvcf:
         ),
         ref=config['ref']['fasta'],
     output:
-        vcf=temp("results/all_group_samples_joint_calls/{joint_calling_group}.vcf.gz"),
-        gvcf=temp("results/all_group_samples_joint_calls/{joint_calling_group}.g.vcf.gz"),
+        vcf="results/individual_calls/{joint_calling_group}.vcf.gz",
+        report=report(
+            "results/individual_calls/{joint_calling_group}.visual_report.html",
+            caption="../report/vcf.rst",
+            category="Calls",
+        ),
+        gvcf="results/individual_calls/{joint_calling_group}.g.vcf.gz",
         scratch=temp(
             directory("results/all_group_samples_joint_calls/{joint_calling_group}_interm")
         ),
@@ -86,9 +91,9 @@ rule deepvariant_gvcf:
         "--sample_name_parent2 {input.samples[0]} "
         "--num_shards {threads}  "
         "--intermediate_results_dir {output.scratch} "
-        "--output_gvcf_child {output.vcf} "
-        "--output_gvcf_parent1 {output.vcf} "
-        "--output_gvcf_parent2 {output.vcf}"
+        "--output_gvcf_child {output.gvcf} "
+        "--output_gvcf_parent1 {output.gvcf} "
+        "--output_gvcf_parent2 {output.gvcf}"
         
 
 
