@@ -1,24 +1,24 @@
-rule deepvariant:
-    input:
-        bam=rules.samtools_merge.output.bam,
-        idx=rules.samtools_merge.output.idx,
-        ref=config['ref']['fasta'],
-        ref_idx=config['ref']['idx'],
-    output:
-        vcf="results/calls/{sample}.vcf.gz",
-        report=report(
-            "results/calls/{sample}.visual_report.html",
-            caption="../report/vcf.rst",
-            category="Calls",
-        ),
-    params:
-        model=config["deepvariant"]["model"],
-        extra=config["deepvariant"]["extra"],
-    threads: config["deepvariant"]["threads"]
-    log:
-        "results/logs/deepvariant/{sample}/stdout.log",
-    wrapper:
-        "0.75.0/bio/deepvariant"
+# rule deepvariant:
+#     input:
+#         bam=rules.samtools_merge.output.bam,
+#         idx=rules.samtools_merge.output.idx,
+#         ref=config['ref']['fasta'],
+#         ref_idx=config['ref']['idx'],
+#     output:
+#         vcf="results/calls/{sample}.vcf.gz",
+#         report=report(
+#             "results/calls/{sample}.visual_report.html",
+#             caption="../report/vcf.rst",
+#             category="Calls",
+#         ),
+#     params:
+#         model=config["deepvariant"]["model"],
+#         extra=config["deepvariant"]["extra"],
+#     threads: config["deepvariant"]["threads"]
+#     log:
+#         "results/logs/deepvariant/{sample}/stdout.log",
+#     wrapper:
+#         "0.75.0/bio/deepvariant"
 
 # rule deepvariant_gvcf:
 #     input:
@@ -181,14 +181,6 @@ rule update_sample_names:
 rule bcftools_merge:
     input:
         calls=[
-            *expand(
-                "results/calls/{sample}.vcf.gz",
-                sample=(
-                    samples.loc[
-                        ~samples.sample_id.isin(joint_calling_groups.sample_id)
-                    ].sample_id.unique()
-                ),
-            ),
             *expand(
                 "results/individual_calls/{sample}.vcf.gz",
                 sample=(
