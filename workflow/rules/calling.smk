@@ -14,8 +14,8 @@ rule deepvariant_gvcf:
         ),
         ref=config['ref']['fasta'],
     output:
-        gvcfs="results/individual_calls/{joint_calling_group}.g.vcf.gz",
-        vcfs="results/individual_calls/{joint_calling_group}.vcf.gz",
+        gvcfs=expand("results/individual_calls/{sample}.g.vcf.gz"),
+        vcfs=expand("results/individual_calls/{sample}.vcf.gz"),
         scratch=directory("results/individual_calls/{joint_calling_group}_interm"),
         # vcfs=directory("results/all_group_samples_joint_calls/{joint_calling_group}_vcf"),
         # gvcfs=directory("results/all_group_samples_joint_calls/{joint_calling_group}_gvcf"),
@@ -39,9 +39,9 @@ rule glnexus:
             sample=joint_calling_group_lists.loc[w.joint_calling_group],
         ),
     output:
-        vcf="results/individual_calls/{sample}.vcf.gz",
+        vcf="results/individual_calls/{samjoint_calling_groupple}.vcf.gz",
         scratch=temp(
-            directory("results/individual_calls/{sample}.DB")
+            directory("results/individual_calls/{joint_calling_group}.DB")
         ),
     params:
         config=config["glnexus"]["config"],
