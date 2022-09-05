@@ -16,7 +16,7 @@ rule deepvariant_gvcf:
     output:
         gvcfs="results/individual_calls/{joint_calling_group}.g.vcf.gz",
         vcfs="results/individual_calls/{joint_calling_group}.vcf.gz",
-        scratch=directory("results/all_group_samples_joint_calls/{joint_calling_group}_interm"),
+        scratch=directory("results/individual_calls/{joint_calling_group}_interm"),
         # vcfs=directory("results/all_group_samples_joint_calls/{joint_calling_group}_vcf"),
         # gvcfs=directory("results/all_group_samples_joint_calls/{joint_calling_group}_gvcf"),
     params:
@@ -39,9 +39,9 @@ rule glnexus:
             sample=joint_calling_group_lists.loc[w.joint_calling_group],
         ),
     output:
-        vcf=temp("results/all_group_samples_joint_calls/{joint_calling_group}.vcf.gz"),
+        vcf="results/individual_calls/{sample}.vcf.gz",
         scratch=temp(
-            directory("results/all_group_samples_joint_calls/{joint_calling_group}.DB")
+            directory("results/individual_calls/{sample}.DB")
         ),
     params:
         config=config["glnexus"]["config"],
@@ -78,69 +78,16 @@ rule bcftools_index:
         "0.75.0/bio/bcftools/index"
 
 
-rule create_reheader_sample_file:
-    input:
-        joint_calling_groups=config["joint_calling_groups"],
-    output:
-        samples=temp("results/joint_calls/{joint_calling_group}_sample_names.tsv"),
-    log:
-        "results/logs/reheader_sample_file/{joint_calling_group}.log",
-    run:
-        (
-            joint_calling_groups.assign(
-                group_sample=lambda x: x.group.str.cat(x.sample_id, sep=":")
-            )
-            .loc[
-                lambda x: x.group == wildcards.joint_calling_group,
-                ["sample_id", "group_sample"],
-            ]
-            .to_csv(output.samples, sep="\t", index=False, header=None)
-        )
-
-
-rule update_sample_names:
-    input:
-        vcf=rules.glnexus.output.vcf,
-        samples=rules.create_reheader_sample_file.output.samples,
-    output:
-        vcf="results/joint_calls/{joint_calling_group}.vcf.gz",
-    log:
-        "results/logs/update_sample_names/{joint_calling_group}.log",
-    params:
-        extra="",
-        view_extra="-O z",
-    wrapper:
-        "0.75.0/bio/bcftools/reheader"
-
-
 rule bcftools_merge:
     input:
         calls=[
             *expand(
                 "results/individual_calls/{sample}.vcf.gz",
-                sample=(
-                    samples.loc[
-                        samples.sample_id.isin(joint_calling_groups.sample_id)
-                    ].sample_id.unique()
-                ),
-            ),
-            *expand(
-                "results/joint_calls/{joint_calling_group}.vcf.gz",
-                joint_calling_group=joint_calling_group_lists.index,
             ),
         ],
         idxs=[
             *expand(
                 "results/individual_calls/{sample}.vcf.gz.csi",
-                sample=(
-                    samples.loc[
-                        samples.sample_id.isin(joint_calling_groups.sample_id)
-                    ].sample_id.unique()
-                ),
-            ),
-            *expand(
-                "results/joint_calls/{joint_calling_group}.vcf.gz.csi",
-                joint_calling_group=joint_calling_group_lists.index,
             ),
         ],
     output:
