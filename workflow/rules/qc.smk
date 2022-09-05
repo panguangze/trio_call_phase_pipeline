@@ -27,23 +27,23 @@ rule samtools_stats:
         "0.75.0/bio/samtools/stats"
 
 
-rule multiqc:
-    input:
-        expand("results/qc/samtools_stats/{s.sample_id}.txt", s=samples.itertuples()),
-        expand(
-            "results/qc/fastqc/{s.sample_id}-{s.unit}_fastqc.zip",
-            s=samples.itertuples(),
-        ),
-        expand(
-            "results/qc/fastp/{s.sample_id}-{s.unit}_fastp.json", s=samples.itertuples()
-        ),
-    output:
-        report(
-            "results/qc/multiqc.html",
-            caption="../report/multiqc.rst",
-            category="Quality control",
-        ),
-    log:
-        "results/logs/multiqc.log",
-    wrapper:
-        "0.75.0/bio/multiqc"
+# rule multiqc:
+#     input:
+#         expand("results/qc/samtools_stats/{s.sample_id}.txt", s=samples.itertuples()),
+#         expand(
+#             "results/qc/fastqc/{s.sample_id}-{s.unit}_fastqc.zip",
+#             s=samples.itertuples(),
+#         ),
+#         expand(
+#             "results/qc/fastp/{s.sample_id}-{s.unit}_fastp.json", s=samples.itertuples()
+#         ),
+#     output:
+#         report(
+#             "results/qc/multiqc.html",
+#             caption="../report/multiqc.rst",
+#             category="Quality control",
+#         ),
+#     log:
+#         "results/logs/multiqc.log",
+#     wrapper:
+#         "0.75.0/bio/multiqc"
