@@ -20,29 +20,76 @@ rule deepvariant:
     wrapper:
         "0.75.0/bio/deepvariant"
 
+# rule deepvariant_gvcf:
+#     input:
+#         bam=rules.samtools_merge.output.bam,
+#         idx=rules.samtools_merge.output.idx,
+#         ref=config['ref']['fasta'],
+#         ref_idx=config['ref']['idx'],
+#     output:
+#         vcf="results/individual_calls/{sample}.vcf.gz",
+#         report=report(
+#             "results/individual_calls/{sample}.visual_report.html",
+#             caption="../report/vcf.rst",
+#             category="Calls",
+#         ),
+#         gvcf="results/individual_calls/{sample}.g.vcf.gz",
+#     params:
+#         model=config["deepvariant_gvcf"]["model"],
+#         extra=config["deepvariant_gvcf"]["extra"],
+#     threads: config["deepvariant_gvcf"]["threads"]
+#     log:
+#         "results/logs/deepvariant_gvcf/{sample}/stdout.log",
+#     wrapper:
+#         "0.75.0/bio/deepvariant"
 
 rule deepvariant_gvcf:
     input:
-        bam=rules.samtools_merge.output.bam,
-        idx=rules.samtools_merge.output.idx,
-        ref=config['ref']['fasta'],
-        ref_idx=config['ref']['idx'],
-    output:
-        vcf="results/individual_calls/{sample}.vcf.gz",
-        report=report(
-            "results/individual_calls/{sample}.visual_report.html",
-            caption="../report/vcf.rst",
-            category="Calls",
+        bams=lambda w: expand(
+            "results/mapped/{sample}.bam",
+            sample=joint_calling_group_lists.loc[w.joint_calling_group],
         ),
-        gvcf="results/individual_calls/{sample}.g.vcf.gz",
+        idxs=lambda w: expand(
+            "results/mapped/{sample}.bam.csi",
+            sample=joint_calling_group_lists.loc[w.joint_calling_group],
+        ),
+        samples=lambda w: expand(
+            "{sample}",
+            sample=joint_calling_group_lists.loc[w.joint_calling_group],
+        ),
+        ref=config['ref']['fasta'],
+    output:
+        vcf=temp("results/all_group_samples_joint_calls/{joint_calling_group}.vcf.gz"),
+        gvcf=temp("results/all_group_samples_joint_calls/{joint_calling_group}.g.vcf.gz"),
+        scratch=temp(
+            directory("results/all_group_samples_joint_calls/{joint_calling_group}_interm")
+        ),
     params:
-        model=config["deepvariant_gvcf"]["model"],
-        extra=config["deepvariant_gvcf"]["extra"],
-    threads: config["deepvariant_gvcf"]["threads"]
+        config=config["glnexus"]["config"],
+    threads: config["glnexus"]["threads"]
     log:
-        "results/logs/deepvariant_gvcf/{sample}/stdout.log",
-    wrapper:
-        "0.75.0/bio/deepvariant"
+        "results/logs/glnexus/{joint_calling_group}/stdout.log",
+    container:
+        "docker://hub.docker.com/google/deepvariant:deeptrio-latest"
+    shell:
+        "/opt/deepvariant/bin/deeptrio/run_deeptrio "
+        "--model_type WGS "
+        "--ref {input.ref} "
+        "--reads_child {input.bams[0]} "
+        "--reads_parent1 {input.bams[1]} "
+        "--reads_parent2 {input.bams[2]} "
+        "--output_vcf_child {output.vcf} "
+        "--output_vcf_parent1 {output.vcf} "
+        "--output_vcf_parent2 {output.vcf} "
+        "--sample_name_child {input.samples[0]} "
+        "--sample_name_parent1 {input.samples[0]} "
+        "--sample_name_parent2 {input.samples[0]} "
+        "--num_shards {threads}  "
+        "--intermediate_results_dir {output.scratch} "
+        "--output_gvcf_child {output.vcf} "
+        "--output_gvcf_parent1 {output.vcf} "
+        "--output_gvcf_parent2 {output.vcf}"
+        
 
 
 rule glnexus:
