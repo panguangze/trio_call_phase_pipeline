@@ -39,7 +39,7 @@ rule glnexus:
             sample=joint_calling_group_lists.loc[w.joint_calling_group],
         ),
     output:
-        vcf="results/individual_calls/{samjoint_calling_groupple}.vcf.gz",
+        vcf="results/individual_calls/{joint_calling_groupple}.vcf.gz",
         scratch=temp(
             directory("results/individual_calls/{joint_calling_group}.DB")
         ),
