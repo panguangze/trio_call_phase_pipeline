@@ -103,6 +103,7 @@ rule glnexus:
             "results/individual_calls/{sample}.g.vcf.gz",
             sample=joint_calling_group_lists.loc[w.joint_calling_group],
         ),
+        test_tmp=rules.deepvariant_gvcf.vcf
     output:
         vcf=temp("results/all_group_samples_joint_calls/{joint_calling_group}.vcf.gz"),
         scratch=temp(
