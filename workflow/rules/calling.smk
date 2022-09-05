@@ -14,9 +14,13 @@ rule deepvariant_gvcf:
         ),
         ref=config['ref']['fasta'],
     output:
-        gvcfs=expand("results/individual_calls/{joint_calling_group}.g.vcf.gz"),
-        vcfs=expand("results/individual_calls/{joint_calling_group}.vcf.gz"),
-        scratch=directory("results/individual_calls/{joint_calling_group}_interm"),
+        # gvcfs=expand("results/individual_calls/{joint_calling_group}_gvcf"),
+        # vcfs=directory("results/individual_calls/{joint_calling_group}_vcf"),
+        gvcfs=lambda w: expand(
+            "results/individual_calls/{sample}.g.vcf.gz",
+            sample=joint_calling_group_lists.loc[w.joint_calling_group],
+        ),
+        # scratch=directory("results/individual_calls/{joint_calling_group}_interm"),
         # vcfs=directory("results/all_group_samples_joint_calls/{joint_calling_group}_vcf"),
         # gvcfs=directory("results/all_group_samples_joint_calls/{joint_calling_group}_gvcf"),
     params:
