@@ -27,20 +27,7 @@ rule deepvariant_gvcf:
     container:
         "docker://hub.docker.com/google/deepvariant:deeptrio-latest"
     shell:
-        "/opt/deepvariant/bin/deeptrio/run_deeptrio "
-        "--model_type WGS "
-        "--ref {input.ref} "
-        "--reads_child {input.bams[0]} "
-        "--reads_parent1 {input.bams[1]} "
-        "--reads_parent2 {input.bams[2]} "
-        "--output_vcf_child {output.vcfs} "
-        "--output_vcf_parent1 {output.vcfs} "
-        "--output_vcf_parent2 {output.vcfs} "
-        "--sample_name_child {input.samples[0]} "
-        "--sample_name_parent1 {input.samples[1]} "
-        "--sample_name_parent2 {input.samples[2]} "
-        "--num_shards {threads}  "
-        "--intermediate_results_dir {output.scratch} "
+        "echo 'text'"
 
         
 
