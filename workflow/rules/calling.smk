@@ -41,9 +41,7 @@ rule deepvariant_gvcf:
         "--sample_name_parent2 {input.samples[2]} "
         "--num_shards {threads}  "
         "--intermediate_results_dir {output.scratch} "
-        "--output_gvcf_child {output.gvcfs} "
-        "--output_gvcf_parent1 {output.gvcfs} "
-        "--output_gvcf_parent2 {output.gvcfs} "
+
         
 
 
