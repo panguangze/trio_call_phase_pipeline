@@ -35,7 +35,7 @@ rule deepvariant_gvcf:
 
 rule glnexus:
     input:
-        gvcfs=ruels.deepvariant_gvcf.gvcfs,
+        gvcfs=directory("results/individual_calls/{joint_calling_group}_dg"),
     output:
         vcf="results/individual_calls/{joint_calling_group}.vcf.gz",
         scratch=temp(
