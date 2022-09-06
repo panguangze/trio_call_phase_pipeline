@@ -85,7 +85,7 @@ rule bcftools_index:
 
 rule bcftools_filter:
     input:
-        rules.bcftools_merge.output.calls,
+        vcf="results/individual_calls/{joint_calling_group}.vcf.gz"
     output:
         "results/merged_calls/all.vcf.gz",
     log:
