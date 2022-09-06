@@ -1,9 +1,18 @@
 # The main entry point of your workflow.
 # After configuring, running snakemake -n in a clone of this repository should successfully execute a dry-run of the workflow.
 from snakemake.utils import min_version
-
+from snakemake.utils import validate
+import pandas as pd
+import numpy as np
+import os
 min_version("6.5")
 
+validate(samples, schema="schemas/samples.schema.yaml")
+
+joint_calling_groups = pd.read_csv(config["joint_calling_groups"], sep="\t")
+validate(joint_calling_groups, schema="schemas/joint_calling_groups.schema.yaml")
+# List of samples for each joint calling group
+joint_calling_group_lists = joint_calling_groups.groupby("group").sample_id.apply(set)
 
 report: "report/workflow.rst"
 
