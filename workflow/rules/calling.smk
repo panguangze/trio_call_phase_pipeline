@@ -1,41 +1,22 @@
 rule deepvariant_gvcf:
     input:
-        # bams=lambda w: expand(
-        #     "results/mapped/{sample}.bam",
-        #     sample=joint_calling_group_lists.loc[w.joint_calling_group],
-        # ),
-        # idxs=lambda w: expand(
-        #     "results/mapped/{sample}.bam.csi",
-        #     sample=joint_calling_group_lists.loc[w.joint_calling_group],
-        # ),
-        # samples=lambda w: expand(
-        #     "{sample}",
-        #     sample=joint_calling_group_lists.loc[w.joint_calling_group],
-        # ),
-        bams=expand(
-            "results/mapped/{sample}.bam"
-            # sample=joint_calling_group_lists.loc[w.joint_calling_group],
+        bams=lambda w: expand(
+            "results/mapped/{sample}.bam",
+            sample=joint_calling_group_lists.loc[w.joint_calling_group],
         ),
-        idxs=expand(
-            "results/mapped/{sample}.bam.csi"
-            # sample=joint_calling_group_lists.loc[w.joint_calling_group],
+        idxs=lambda w: expand(
+            "results/mapped/{sample}.bam.csi",
+            sample=joint_calling_group_lists.loc[w.joint_calling_group],
         ),
-        samples=expand(
-            "{sample}"
-            # sample=joint_calling_group_lists.loc[w.joint_calling_group],
+        samples=lambda w: expand(
+            "{sample}",
+            sample=joint_calling_group_lists.loc[w.joint_calling_group],
         ),
         ref=config['ref']['fasta'],
     output:
         # gvcfs=expand("results/individual_calls/{joint_calling_group}_gvcf"),
         # vcfs=directory("results/individual_calls/{joint_calling_group}_vcf"),
-        gvcfs=expand(
-            "results/individual_calls/{sample}.g.vcf.gz",
-            sample=(
-                samples.loc[
-                    ~samples.sample_id.isin(joint_calling_groups.sample_id)
-                ].sample_id.unique()
-            ),
-        ),
+        gvcfs=expand("results/individual_calls/{sample}.g.vcf.gz"),
         # scratch=directory("results/individual_calls/{joint_calling_group}_interm"),
         # vcfs=directory("results/all_group_samples_joint_calls/{joint_calling_group}_vcf"),
         # gvcfs=directory("results/all_group_samples_joint_calls/{joint_calling_group}_gvcf"),
