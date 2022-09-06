@@ -83,28 +83,6 @@ rule bcftools_index:
         "0.75.0/bio/bcftools/index"
 
 
-rule bcftools_merge:
-    input:
-        calls=[
-            *expand(
-                "results/individual_calls/{sample}.vcf.gz",
-            ),
-        ],
-        idxs=[
-            *expand(
-                "results/individual_calls/{sample}.vcf.gz.csi",
-            ),
-        ],
-    output:
-        calls=temp("results/merged_calls/all.unfiltered.vcf.gz"),
-    log:
-        "results/logs/bcftools_merge/bcftools_merge.log",
-    params:
-        config["bcftools_merge"]["params"] + " -Oz",  # optional parameters for bcftools concat (except -o)
-    wrapper:
-        "0.75.0/bio/bcftools/merge"
-
-
 rule bcftools_filter:
     input:
         rules.bcftools_merge.output.calls,
