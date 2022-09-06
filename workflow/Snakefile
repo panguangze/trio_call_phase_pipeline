@@ -10,11 +10,13 @@ report: "report/workflow.rst"
 
 rule all:
     input:
-        "results/merged_calls/all.vcf.gz",
+        expand(
+            "results/individual_calls/{joint_calling_group}.vcf.gz",
+            joint_calling_group=joint_calling_group_lists.index,
+        ),
 
 
 include: "rules/common.smk"
-# include: "rules/ref.smk"
 include: "rules/trimming.smk"
 include: "rules/mapping.smk"
 include: "rules/calling.smk"
