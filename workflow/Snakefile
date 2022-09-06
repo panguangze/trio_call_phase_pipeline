@@ -10,15 +10,14 @@ min_version("6.5")
 joint_calling_groups = pd.read_csv(config["joint_calling_groups"], sep="\t")
 validate(joint_calling_groups, schema="schemas/joint_calling_groups.schema.yaml")
 # List of samples for each joint calling group
-joint_calling_group_lists = joint_calling_groups.groupby("group").sample_id.apply(set)
+joint_calling_group_lists = joint_calling_groups.groupby("group").sample_id.apply(list)
 
 report: "report/workflow.rst"
-
 
 rule all:
     input:
         expand(
-            "results/individual_calls/{joint_calling_group}.vcf.gz",
+            "results/group_calls/{joint_calling_group}.filter.vcf.gz",
             joint_calling_group=joint_calling_group_lists.index,
         ),
 
@@ -26,5 +25,5 @@ rule all:
 include: "rules/common.smk"
 include: "rules/trimming.smk"
 include: "rules/mapping.smk"
-include: "rules/calling.smk"
+include: "rules/trio_calling_snp.smk"
 include: "rules/qc.smk"

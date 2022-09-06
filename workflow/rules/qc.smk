@@ -1,30 +1,30 @@
-rule fastqc:
-    input:
-        unpack(get_fastq),
-    output:
-        html="results/qc/fastqc/{sample}-{unit}.html",
-        zip="results/qc/fastqc/{sample}-{unit}_fastqc.zip",
-    params:
-        "--quiet",
-    log:
-        "results/logs/fastqc/{sample}-{unit}.log",
-    threads: 14
-    wrapper:
-        "0.75.0/bio/fastqc"
+# rule fastqc:
+#     input:
+#         unpack(get_fastq),
+#     output:
+#         html="results/qc/fastqc/{sample}-{unit}.html",
+#         zip="results/qc/fastqc/{sample}-{unit}_fastqc.zip",
+#     params:
+#         "--quiet",
+#     log:
+#         "results/logs/fastqc/{sample}-{unit}.log",
+#     threads: 14
+#     wrapper:
+#         "0.75.0/bio/fastqc"
 
 
-rule samtools_stats:
-    input:
-        rules.samtools_merge.output.bam,
-    output:
-        "results/qc/samtools_stats/{sample}.txt",
-    params:
-        extra="",  # Optional: extra arguments.
-        region="",  # Optional: region string.
-    log:
-        "results/logs/samtools_stats/{sample}.log",
-    wrapper:
-        "0.75.0/bio/samtools/stats"
+# rule samtools_stats:
+#     input:
+#         rules.samtools_merge.output.bam,
+#     output:
+#         "results/qc/samtools_stats/{sample}.txt",
+#     params:
+#         extra="",  # Optional: extra arguments.
+#         region="",  # Optional: region string.
+#     log:
+#         "results/logs/samtools_stats/{sample}.log",
+#     wrapper:
+#         "0.75.0/bio/samtools/stats"
 
 
 # rule multiqc:

@@ -18,13 +18,14 @@ samples.index = samples.index.set_levels(
     [i.astype(str) for i in samples.index.levels]
 )  # enforce str in index
 
-
 ## Helper functions
+
 
 
 def get_fastq(wildcards):
     """Get fastq files of given sample-unit."""
     fastqs = samples.loc[(wildcards.sample, wildcards.unit), ["fq1", "fq2"]].dropna()
+    print(fastqs)
     if len(fastqs) == 2:
         return {"sample": [fastqs.fq1, fastqs.fq2]}
     return {"sample": [fastqs.fq1]}
@@ -54,6 +55,6 @@ def get_bwa_index(wildcards):
         "bwa-mem2/mem",
     ], "BWA-MEM wrapper must be either bwa/mem or bwa-mem2/mem"
     if config["bwa_mem"]["wrapper"] == "bwa/mem":
-        return "resources/genome.fasta.sa"
+        return "resources/"+config["ref"]["bwa_idx"]
     else:
-        return "resources/genome.fasta.0123"
+        return "resources/"+config["ref"]["bwa_idx"]
