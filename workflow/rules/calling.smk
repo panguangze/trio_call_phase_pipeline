@@ -1,16 +1,28 @@
 rule deepvariant_gvcf:
     input:
-        bams=lambda w: expand(
-            "results/mapped/{sample}.bam",
-            sample=joint_calling_group_lists.loc[w.joint_calling_group],
+        # bams=lambda w: expand(
+        #     "results/mapped/{sample}.bam",
+        #     sample=joint_calling_group_lists.loc[w.joint_calling_group],
+        # ),
+        # idxs=lambda w: expand(
+        #     "results/mapped/{sample}.bam.csi",
+        #     sample=joint_calling_group_lists.loc[w.joint_calling_group],
+        # ),
+        # samples=lambda w: expand(
+        #     "{sample}",
+        #     sample=joint_calling_group_lists.loc[w.joint_calling_group],
+        # ),
+        bams=expand(
+            "results/mapped/{sample}.bam"
+            # sample=joint_calling_group_lists.loc[w.joint_calling_group],
         ),
-        idxs=lambda w: expand(
-            "results/mapped/{sample}.bam.csi",
-            sample=joint_calling_group_lists.loc[w.joint_calling_group],
+        idxs=expand(
+            "results/mapped/{sample}.bam.csi"
+            # sample=joint_calling_group_lists.loc[w.joint_calling_group],
         ),
-        samples=lambda w: expand(
-            "{sample}",
-            sample=joint_calling_group_lists.loc[w.joint_calling_group],
+        samples=expand(
+            "{sample}"
+            # sample=joint_calling_group_lists.loc[w.joint_calling_group],
         ),
         ref=config['ref']['fasta'],
     output:
