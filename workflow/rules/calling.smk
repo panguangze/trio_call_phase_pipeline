@@ -16,7 +16,7 @@ rule deepvariant_gvcf:
     output:
         # gvcfs=expand("results/individual_calls/{joint_calling_group}_gvcf"),
         # vcfs=directory("results/individual_calls/{joint_calling_group}_vcf"),
-        gvcfs=expand("results/individual_calls/{sample}.g.vcf.gz"),
+        gvcfs=directory("results/individual_calls/{joint_calling_group}_dg"),
         # scratch=directory("results/individual_calls/{joint_calling_group}_interm"),
         # vcfs=directory("results/all_group_samples_joint_calls/{joint_calling_group}_vcf"),
         # gvcfs=directory("results/all_group_samples_joint_calls/{joint_calling_group}_gvcf"),
@@ -78,11 +78,11 @@ rule bcftools_index:
 
 rule bcftools_filter:
     input:
-        vcf=expand("results/individual_calls/{joint_calling_group}.vcf.gz")
+        vcf="results/individual_calls/{joint_calling_group}.vcf.gz",
     output:
-        "results/merged_calls/all.vcf.gz",
+        "results/merged_calls/{joint_calling_group}.filter.vcf.gz",
     log:
-        "results/logs/bcftools_filter_all.log",
+        "results/logs/bcftools_filter_{joint_calling_group}.log",
     params:
         filter=config["bcftools_filter"]["filter"],
         extra="",
