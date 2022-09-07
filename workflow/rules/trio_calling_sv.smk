@@ -20,7 +20,7 @@ rule dysgu_run:
     log:
         "results/logs/{sample}_dysgu.log",
     shell:
-        "{params.bin_path} "
+        "{params.bin_path} run "
         "-p {threads} "
         "{params.run_params} "
         "{params.ref} "
@@ -44,7 +44,7 @@ rule dysgu_merge:
     log:
         "results/logs/dysgu_sv/{joint_calling_group}_dysgu.merge.log",
     shell:
-        "{params.bin_path} "
+        "{params.bin_path} merge "
         "{params.merge_trio_params} "
         "{input.vcfs} "
         "-o {output.out_vcf}"
@@ -54,7 +54,7 @@ rule bcftools_sv_filter:
     input:
         vcf="results/dysgu_sv/{joint_calling_group}.dysgu.merge.vcf",
     output:
-        "results/dysgu_sv/{joint_calling_group}.dysgu.merge.filter.vcf.gz",
+        out="results/dysgu_sv/{joint_calling_group}.dysgu.merge.filter.vcf.gz",
     log:
         "results/logs/dysgu_sv/bcftools_sv_filter_{joint_calling_group}.log",
     params:
@@ -63,17 +63,17 @@ rule bcftools_sv_filter:
     wrapper:
         "0.75.0/bio/bcftools/filter"
 
-rule bcftools_index:
+rule bcftools_sv_index:
     input:
-        "{vcffile}.vcf.gz",
+        "results/dysgu_sv/{joint_calling_group}.dysgu.merge.filter.vcf.gz",
     output:
-        "{vcffile}.vcf.gz.csi",
+        idx="results/dysgu_sv/{joint_calling_group}.dysgu.merge.filter.vcf.gz.csi",
     params:
         extra=config["bcftools_index"]["extra"] + " --threads {}".format(
             config["bcftools_index"]["threads"]
         ),
     log:
-        "results/logs/bcftools_index/{vcffile}.log",
+        "results/logs/bcftools_index/{joint_calling_group}_sv.log",
     threads: config["bcftools_index"]["threads"]
     wrapper:
         "0.75.0/bio/bcftools/index"

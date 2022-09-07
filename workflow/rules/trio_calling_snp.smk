@@ -20,11 +20,11 @@ rule deepvariant_gvcf:
         # gvcfs=directory("results/all_group_samples_joint_calls/{joint_calling_group}_gvcf"),
     params:
         sample_names=parse_sample_names,
-        config=config["glnexus"]["config"],
+        # config=config["deepvariant_gvcf"]["config"],
         ref=config['ref']['fasta'],
-    threads: config["glnexus"]["threads"]
+    threads: config["deepvariant_gvcf"]["threads"]
     log:
-        "results/logs/glnexus/{joint_calling_group}/stdout.log",
+        "results/logs/deepvariant_gvcf/{joint_calling_group}/stdout.log",
     singularity:
         "docker://google/deepvariant:deeptrio-latest"
     shell:
@@ -98,23 +98,23 @@ rule bcftools_nomiss:
     input:
         vcf="results/glnexus_gvcf/{joint_calling_group}.vcf.gz",
     output:
-        "results/glnexus_gvcf/{joint_calling_group}.nomiss.vcf.gz",
+        out="results/glnexus_gvcf/{joint_calling_group}.nomiss.vcf.gz",
     log:
         "results/logs/bcftools_nomiss_{joint_calling_group}.log",
     params:
-        extra="-g ^miss",
+        extra="-g ^miss -Oz",
     wrapper:
         "0.75.0/bio/bcftools/view"
 
-rule bcftools_filter:
-    input:
-        vcf="results/glnexus_gvcf/{joint_calling_group}.nomiss.vcf.gz",
-    output:
-        "results/glnexus_gvcf/{joint_calling_group}.filter.vcf.gz",
-    log:
-        "results/logs/bcftools_filter_{joint_calling_group}.log",
-    params:
-        filter=config["bcftools_filter"]["filter"],
-        extra="",
-    wrapper:
-        "0.75.0/bio/bcftools/filter"
+# rule bcftools_filter:
+#     input:
+#         vcf="results/glnexus_gvcf/{joint_calling_group}.nomiss.vcf.gz",
+#     output:
+#         "results/glnexus_gvcf/{joint_calling_group}.filter.vcf.gz",
+#     log:
+#         "results/logs/bcftools_filter_{joint_calling_group}.log",
+#     params:
+#         filter=config["bcftools_filter"]["filter"],
+#         extra="",
+#     wrapper:
+#         "0.75.0/bio/bcftools/filter"

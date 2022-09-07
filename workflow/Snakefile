@@ -17,13 +17,14 @@ report: "report/workflow.rst"
 rule all:
     input:
         expand(
-            "results/group_calls/{joint_calling_group}.filter.vcf.gz",
+            "results/spechap/{joint_calling_group}_temp.txt",
             joint_calling_group=joint_calling_group_lists.index,
         ),
-
 
 include: "rules/common.smk"
 include: "rules/trimming.smk"
 include: "rules/mapping.smk"
 include: "rules/trio_calling_snp.smk"
+include: "rules/trio_calling_sv.smk"
+include: "rules/extractHair.smk"
 include: "rules/qc.smk"

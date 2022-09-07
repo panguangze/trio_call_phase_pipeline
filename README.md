@@ -1,33 +1,18 @@
-# Snakemake workflow: dna-seq-deepvariant-glnexus-variant-calling
+conda create -c conda-forge -c bioconda --name snakemake snakemake snakedeploy
+conda activate snakemake
+conda install mamba
+conda install singularity
 
-[![DOI](https://zenodo.org/badge/355875057.svg)](https://zenodo.org/badge/latestdoi/355875057)
-[![Snakemake](https://img.shields.io/badge/snakemake-≥6.5-brightgreen.svg)](https://snakemake.bitbucket.io)
-[![Tests](https://github.com/nikostr/dna-seq-deepvariant-glnexus-variant-calling/actions/workflows/python-package-conda.yml/badge.svg)](https://github.com/nikostr/dna-seq-deepvariant-glnexus-variant-calling/actions/workflows/python-package-conda.yml)
+mkdir -p path/to/project-workdir
+cd path/to/project-workdir
 
-This is a Snakemake workflow implementing the [multi-sample variant calling with DeepVariant and GLnexus](https://github.com/google/deepvariant/blob/master/docs/trio-merge-case-study.md). It also allows for single-sample variant calling, and creating a merged vcf containing both individual call sets and merged call sets.
-
-## Authors
-
-* Nikos Tsardakas Renhuldt (@nikostr)
-
-## Usage
-
-The usage of this workflow is described in the [Snakemake Workflow Catalog](https://snakemake.github.io/snakemake-workflow-catalog?usage=nikostr/dna-seq-deepvariant-glnexus-variant-calling).
-
-If you use this workflow in a paper, don't forget to give credits to the authors by citing the URL of this (original) repository and its DOI (see above).
-
-Of course, also make sure to credit the tools this workflow uses:
+snakedeploy deploy-workflow https://github.com/panguangze/trio_call_phase_pipeline.git . --branch main
 
 
-  - R. Poplin et al., “A universal SNP and small-indel variant caller using deep neural networks,” Nat Biotechnol, vol. 36, no. 10, pp. 983–987, Nov. 2018, doi: 10.1038/nbt.4235.
-  - T. Yun, H. Li, P.-C. Chang, M. F. Lin, A. Carroll, and C. Y. McLean, “Accurate, scalable cohort variant calls using DeepVariant and GLnexus,” Bioinformatics, vol. 36, no. 24, pp. 5582–5589, Apr. 2021, doi: 10.1093/bioinformatics/btaa1081.
-  - H. Li, “Aligning sequence reads, clone sequences and assembly contigs with BWA-MEM,” arXiv:1303.3997 [q-bio], May 2013, Accessed: Apr. 27, 2021. [Online]. Available: http://arxiv.org/abs/1303.3997.
-  - Vasimuddin Md, Sanchit Misra, Heng Li, Srinivas Aluru, "Efficient Architecture-Aware Acceleration of BWA-MEM for Multicore Systems," IEEE Parallel and Distributed Processing Symposium (IPDPS), 2019.
-  - A. D. Yates et al., “Ensembl 2020,” Nucleic Acids Research, p. gkz966, Nov. 2019, doi: 10.1093/nar/gkz966.
-  - S. Chen, Y. Zhou, Y. Chen, and J. Gu, “fastp: an ultra-fast all-in-one FASTQ preprocessor,” Bioinformatics, vol. 34, no. 17, pp. i884–i890, Sep. 2018, doi: 10.1093/bioinformatics/bty560.
-  - S. Andrews, FastQC: A Quality Control tool for High Throughput Sequence Data. .
-  - O. Tange, Gnu Parallel 20150322 ('Hellwig’). Zenodo, 2015.
-  - P. Ewels, M. Magnusson, S. Lundin, and M. Käller, “MultiQC: summarize analysis results for multiple tools and samples in a single report,” Bioinformatics, vol. 32, no. 19, pp. 3047–3048, Oct. 2016, doi: 10.1093/bioinformatics/btw354.
-  - J. Reback et al., pandas-dev/pandas: Pandas 1.2.4. Zenodo, 2021.
-  - F. Mölder et al., “Sustainable data analysis with Snakemake,” F1000Res, vol. 10, p. 33, Apr. 2021, doi: 10.12688/f1000research.29032.2.
-  - P. Danecek et al., “Twelve years of SAMtools and BCFtools,” GigaScience, vol. 10, no. 2, p. giab008, Jan. 2021, doi: 10.1093/gigascience/giab008.
+Adjust config.yaml to configure the workflow execution. The config files samples.tsv and joint_calling_groups.tsv contain the following sample information:
+
+samples.tsv lists the samples as well as the read sets for each sample, with one set of reads for each sample_id-unit. Note that sample_id-unit combinations should be unique.
+joint_calling_groups.tsv groups samples for joint calling. Note that jointly called samples will be named with the format group:sample_id in the GLnexus output and in the final all.vcf.gz file.
+The pipeline will call all samples individually. Samples specified as belonging to the same joint calling group will be called jointly by GLnexus. To call all samples jointly, specify them as all belonging to the same joint calling group. Samples that are only called individually do not need to be specified in joint_calling_groups.tsv.
+
+snakemake --cores all --use-conda --use-singularity 
