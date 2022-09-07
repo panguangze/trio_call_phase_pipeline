@@ -1,3 +1,10 @@
+install:
+
+dysgu https://github.com/panguangze/dysgu.git master branch
+
+pedHap https://github.com/panguangze/pedHapCpp.git main branch
+
+
 conda create -c conda-forge -c bioconda --name snakemake snakemake snakedeploy
 
 
