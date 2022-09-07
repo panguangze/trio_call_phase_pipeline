@@ -80,3 +80,7 @@ specHap:
 other_bin:
   tabix: "/home/panguangze/apps/usr/local/bin/tabix"
   bgzip: "/home/panguangze/apps/usr/local/bin/bgzip"
+
+pedHap:
+  bin_path: "/home/panguangze/apps/usr/local/bin/pedHap"
+  run_params: "--ped /mnt/d/linux/cityu/pedHapCpp/test/hg/HG002_bk/trio.order --debug --seg_dup xxx.bed --simple_repeat xxx.bed"

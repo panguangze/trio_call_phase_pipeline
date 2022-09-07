@@ -17,7 +17,7 @@ report: "report/workflow.rst"
 rule all:
     input:
         expand(
-            "results/spechap/{joint_calling_group}_temp.txt",
+            "results/pedhap/{joint_calling_group}.pedhap.vcf",
             joint_calling_group=joint_calling_group_lists.index,
         ),
 
@@ -26,5 +26,5 @@ include: "rules/trimming.smk"
 include: "rules/mapping.smk"
 include: "rules/trio_calling_snp.smk"
 include: "rules/trio_calling_sv.smk"
-include: "rules/extractHair.smk"
+include: "rules/phase.smk"
 include: "rules/qc.smk"

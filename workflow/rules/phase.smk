@@ -119,7 +119,7 @@ rule tabix_spec:
     input:
         phased_dir=rules.spechap_trio.output.phased_dir
     output:
-        temp("results/spechap/{joint_calling_group}_temp.txt")
+        touch("results/spechap/{joint_calling_group}_spectrio.done")
     params:
         tabix_path=config["other_bin"]["tabix"],
     run:
@@ -128,4 +128,20 @@ rule tabix_spec:
         shell("{params.tabix_path} -f {input.phased_dir}/2.spec.vcf.gz")
         shell("touch {output}")
 
-    
+rule pedHap:
+    input:
+        phased_dir=rules.spechap_trio.output.phased_dir,
+        tabix_done="results/spechap/{joint_calling_group}_spectrio.done",
+    output:
+        vcf="results/pedhap/{joint_calling_group}.pedhap.vcf",
+        recom="results/pedhap/{joint_calling_group}.recom.txt",
+    params:
+        bin_path=config["pedHap"]["bin_path"],
+        run_params=config["pedHap"]["run_params"],
+        vcf=lambda w,input: os.path.join(input.phased_dir, "2.spec.vcf.gz"),
+    shell:
+        "{params.bin_path} "
+        "{params.run_params} "
+        "--vcf {params.vcf} "
+        "--out {output.vcf} "
+        "--homo_recom {output.recom} "
