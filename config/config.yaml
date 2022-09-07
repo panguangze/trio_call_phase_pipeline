@@ -81,6 +81,7 @@ other_bin:
   tabix: "/home/panguangze/apps/usr/local/bin/tabix"
   bgzip: "/home/panguangze/apps/usr/local/bin/bgzip"
 
+# seg_dup and simple_repeat in pedhap_dir is only for human t2t reference, you show replace your own version 
 pedHap:
   bin_path: "/home/panguangze/apps/usr/local/bin/pedHap"
-  run_params: "--ped /mnt/d/linux/cityu/pedHapCpp/test/hg/HG002_bk/trio.order --debug --seg_dup D:\linux\cityu\pedHapCpp\scripts\chm13v2.0_SD.bed --simple_repeat D:\linux\cityu\pedHapCpp\scripts\chm13.simpleRepeat.50.bed"
+  run_params: "--ped /mnt/d/linux/cityu/pedHapCpp/test/hg/HG002_bk/trio.order --debug --seg_dup pedHapCpp/scripts/chm13v2.0_SD.bed --simple_repeat pedHapCpp/scripts/chm13.simpleRepeat.50.bed"
