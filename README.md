@@ -1,9 +1,19 @@
 conda create -c conda-forge -c bioconda --name snakemake snakemake snakedeploy
+
+
 conda activate snakemake
+
+
 conda install mamba
+
+
 conda install singularity
 
+
+
 mkdir -p path/to/project-workdir
+
+
 cd path/to/project-workdir
 
 snakedeploy deploy-workflow https://github.com/panguangze/trio_call_phase_pipeline.git . --branch main
