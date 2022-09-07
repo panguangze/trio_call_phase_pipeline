@@ -123,9 +123,9 @@ rule tabix_spec:
     params:
         tabix_path=config["other_bin"]["tabix"],
     run:
-        shell("{params.tabix_path} {input.phased_dir}/0.spec.vcf.gz")
-        shell("{params.tabix_path} {input.phased_dir}/1.spec.vcf.gz")
-        shell("{params.tabix_path} {input.phased_dir}/2.spec.vcf.gz")
+        shell("{params.tabix_path} -f {input.phased_dir}/0.spec.vcf.gz")
+        shell("{params.tabix_path} -f {input.phased_dir}/1.spec.vcf.gz")
+        shell("{params.tabix_path} -f {input.phased_dir}/2.spec.vcf.gz")
         shell("touch {output}")
 
     
