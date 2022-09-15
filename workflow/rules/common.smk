@@ -12,7 +12,7 @@ configfile: "config/config.yaml"
 validate(config, schema="../schemas/config.schema.yaml")
 
 samples = pd.read_table(config["samples"], dtype=str).set_index(
-    ["sample_id", "unit"], drop=False
+    ["sample_id", "unit", "type"], drop=False
 )
 samples.index = samples.index.set_levels(
     [i.astype(str) for i in samples.index.levels]
@@ -24,14 +24,13 @@ samples.index = samples.index.set_levels(
 
 def get_fastq(wildcards):
     """Get fastq files of given sample-unit."""
-    fastqs = samples.loc[(wildcards.sample, wildcards.unit), ["fq1", "fq2"]].dropna()
-    print(fastqs)
+    fastqs = samples.loc[(wildcards.sample, wildcards.unit, wildcards,type), ["fq1", "fq2"]].dropna()
     if len(fastqs) == 2:
         return {"sample": [fastqs.fq1, fastqs.fq2]}
     return {"sample": [fastqs.fq1]}
 
 
-def is_single_end(sample, unit):
+def is_single_end(sample, unit, type):
     """Return True if sample-unit is single end."""
     return pd.isnull(samples.loc[(sample, unit), "fq2"])
 
@@ -41,12 +40,12 @@ def get_trimmed_reads(wildcards):
     if not is_single_end(**wildcards):
         # paired-end sample
         return expand(
-            "results/trimmed/{sample}-{unit}.{group}.fastq.gz",
+            "results/trimmed/{sample}-{unit}-{fq_type}.{group}.fastq.gz",
             group=[1, 2],
             **wildcards
         )
     # single end sample
-    return "results/trimmed/{sample}-{unit}.fastq.gz".format(**wildcards)
+    return "results/trimmed/{sample}-{unit}-{fq_type}.fastq.gz".format(**wildcards)
 
 
 def get_bwa_index(wildcards):
@@ -58,3 +57,7 @@ def get_bwa_index(wildcards):
         return "resources/"+config["ref"]["bwa_idx"]
     else:
         return "resources/"+config["ref"]["bwa_idx"]
+
+def get_params_align(wildcards):
+        
+    return {"sample": [fastqs.fq1]}

@@ -3,10 +3,10 @@ rule map_reads:
         reads=get_trimmed_reads,
         idx=config['ref']['bwa_idx'],
     output:
-        temp("results/mapped/{sample}-{unit}.sorted.bam"),
-        temp("results/mapped/{sample}-{unit}.sorted.bam.csi"),
+        temp("results/mapped/{sample}-{unit}-{fq_type}.sorted.bam"),
+        temp("results/mapped/{sample}-{unit}-{fq_type}.sorted.bam.csi"),
     log:
-        "results/logs/bwa_mem/{sample}-{unit}.log",
+        "results/logs/bwa_mem/{sample}-{unit}-{fq_type}.log",
     params:
         index=lambda w, input: os.path.splitext(input.idx)[0],
         extra=config["bwa_mem"]["extra"] + " -R '@RG\\tID:foo\\tSM:{sample}\\tLB:library1'",
@@ -21,9 +21,10 @@ rule map_reads:
 rule samtools_merge:
     input:
         lambda w: expand(
-            "results/mapped/{sample}-{unit}.sorted.bam",
+            "results/mapped/{sample}-{unit}-{fq_type}.sorted.bam",
             sample=w,
             unit=samples.loc[w].unit,
+            type=samples.loc[(w,unit)].fq_type,
         ),
     output:
         bam="results/mapped/{sample}.bam",
