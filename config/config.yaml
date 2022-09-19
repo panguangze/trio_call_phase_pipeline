@@ -65,9 +65,9 @@ bcftools_sv_filter:
 
 dysgu:
   bin_path: "/home/panguangze/miniconda3/envs/snakemake/bin/dysgu"
-  run_params: "-a --min-support 5 -v 2"
+  run_params: "-a --min-support 10 -v 2"
   threads: 8
-  merge_trio_params: "--merge-within True -v2 --trio True"
+  merge_trio_params: "--merge-within True -v2"
 
 extracHairs:
   bin_path: "/home/panguangze/apps/usr/local/bin/ExtractHAIRs"

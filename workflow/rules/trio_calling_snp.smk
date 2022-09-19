@@ -1,64 +1,40 @@
-def parse_sample_names(w,input):
-    return list(joint_calling_group_lists.loc[w.joint_calling_group])
 rule deepvariant_gvcf:
     input:
-        bams=lambda w: expand(
-            "results/mapped/{sample}.bam",
-            sample=joint_calling_group_lists.loc[w.joint_calling_group],
-        ),
-        idxs=lambda w: expand(
-            "results/mapped/{sample}.bam.csi",
-            sample=joint_calling_group_lists.loc[w.joint_calling_group],
-        ),
+        bam=rules.samtools_merge.output.bam,
+        idx=rules.samtools_merge.output.idx,
         ref=config['ref']['fasta'],
+        ref_idx=config['ref']['idx'],
     output:
-        # gvcfs=expand("results/individual_calls/{joint_calling_group}_gvcf"),
-        # vcfs=directory("results/individual_calls/{joint_calling_group}_vcf"),
-        out_dir=directory("results/deepvariant_gvcf/{joint_calling_group}_dgcall"),
-        # scratch=directory("results/individual_calls/{joint_calling_group}_interm"),
-        # vcfs=directory("results/all_group_samples_joint_calls/{joint_calling_group}_vcf"),
-        # gvcfs=directory("results/all_group_samples_joint_calls/{joint_calling_group}_gvcf"),
+        vcf="results/individual_calls/{sample}.vcf.gz",
+        report=report(
+            "results/individual_calls/{sample}.visual_report.html",
+            caption="../report/vcf.rst",
+            category="Calls",
+        ),
+        gvcf="results/individual_calls/{sample}.g.vcf.gz",
     params:
-        sample_names=parse_sample_names,
-        # config=config["deepvariant_gvcf"]["config"],
-        ref=config['ref']['fasta'],
+        model=config["deepvariant_gvcf"]["model"],
+        extra=config["deepvariant_gvcf"]["extra"],
     threads: config["deepvariant_gvcf"]["threads"]
     log:
-        "results/logs/deepvariant_gvcf/{joint_calling_group}/stdout.log",
-    singularity:
-        "docker://google/deepvariant:deeptrio-latest"
-    shell:
-        "run_deeptrio "
-        "--model_type WGS "
-        "--ref {params.ref} "
-        "--reads_child {input.bams[0]} "
-        "--reads_parent1 {input.bams[1]} "
-        "--reads_parent2 {input.bams[2]} "
-        "--output_vcf_child {output.out_dir}/{params.sample_names[0]}.vcf.gz "
-        "--output_vcf_parent1 {output.out_dir}/{params.sample_names[1]}.vcf.gz "
-        "--output_vcf_parent2 {output.out_dir}/{params.sample_names[2]}.vcf.gz "
-        "--sample_name_child {params.sample_names[0]} "
-        "--sample_name_parent1 {params.sample_names[1]} "
-        "--sample_name_parent2 {params.sample_names[2]} "
-        "--num_shards {threads}  "
-        "--intermediate_results_dir {output}/intermediate_results_dir "
-        "--output_gvcf_child {output.out_dir}/{params.sample_names[0]}.g.vcf.gz "
-        "--output_gvcf_parent1 {output.out_dir}/{params.sample_names[1]}.g.vcf.gz "
-        "--output_gvcf_parent2 {output.out_dir}/{params.sample_names[2]}.g.vcf.gz "
-        
+        "results/logs/deepvariant_gvcf/{sample}/stdout.log",
+    wrapper:
+        "0.75.0/bio/deepvariant"
 
 
 rule glnexus:
     input:
-        gvcfs=rules.deepvariant_gvcf.output.out_dir,
+        gvcfs=lambda w: expand(
+            "results/individual_calls/{sample}.g.vcf.gz",
+            sample=joint_calling_group_lists.loc[w.joint_calling_group],
+        ),
     output:
-        vcf="results/glnexus_gvcf/{joint_calling_group}.vcf.gz",
+        vcf=temp("results/all_group_samples_joint_calls/{joint_calling_group}.vcf.gz"),
         scratch=temp(
-            directory("results/glnexus_gvcf/{joint_calling_group}.DB")
+            directory("results/all_group_samples_joint_calls/{joint_calling_group}.DB")
         ),
     params:
         config=config["glnexus"]["config"],
-        sample_names=parse_sample_names,
     threads: config["glnexus"]["threads"]
     log:
         "results/logs/glnexus/{joint_calling_group}/stdout.log",
@@ -69,9 +45,7 @@ rule glnexus:
         "--config DeepVariantWGS "
         "--dir {output.scratch} "
         "--threads {threads} "
-        "{input.gvcfs}/{params.sample_names[0]}.g.vcf.gz "
-        "{input.gvcfs}/{params.sample_names[1]}.g.vcf.gz "
-        "{input.gvcfs}/{params.sample_names[2]}.g.vcf.gz "
+        "{input} "
         "2> {log} "
         "| bcftools view - "
         "| bgzip -c "
@@ -94,9 +68,101 @@ rule bcftools_index:
         "0.75.0/bio/bcftools/index"
 
 
+rule create_reheader_sample_file:
+    input:
+        joint_calling_groups=config["joint_calling_groups"],
+    output:
+        samples=temp("results/joint_calls/{joint_calling_group}_sample_names.tsv"),
+    log:
+        "results/logs/reheader_sample_file/{joint_calling_group}.log",
+    run:
+        (
+            joint_calling_groups.assign(
+                group_sample=lambda x: x.group.str.cat(x.sample_id, sep=":")
+            )
+            .loc[
+                lambda x: x.group == wildcards.joint_calling_group,
+                ["sample_id", "group_sample"],
+            ]
+            .to_csv(output.samples, sep="\t", index=False, header=None)
+        )
+
+
+rule update_sample_names:
+    input:
+        vcf=rules.glnexus.output.vcf,
+        samples=rules.create_reheader_sample_file.output.samples,
+    output:
+        vcf="results/joint_calls/{joint_calling_group}.vcf.gz",
+    log:
+        "results/logs/update_sample_names/{joint_calling_group}.log",
+    params:
+        extra="",
+        view_extra="-O z",
+    wrapper:
+        "0.75.0/bio/bcftools/reheader"
+
+
+rule bcftools_merge:
+    input:
+        calls=[
+            *expand(
+                "results/calls/{sample}.vcf.gz",
+                sample=(
+                    samples.loc[
+                        ~samples.sample_id.isin(joint_calling_groups.sample_id)
+                    ].sample_id.unique()
+                ),
+            ),
+            *expand(
+                "results/individual_calls/{sample}.vcf.gz",
+                sample=(
+                    samples.loc[
+                        samples.sample_id.isin(joint_calling_groups.sample_id)
+                    ].sample_id.unique()
+                ),
+            ),
+            *expand(
+                "results/joint_calls/{joint_calling_group}.vcf.gz",
+                joint_calling_group=joint_calling_group_lists.index,
+            ),
+        ],
+        idxs=[
+            *expand(
+                "results/calls/{sample}.vcf.gz.csi",
+                sample=(
+                    samples.loc[
+                        ~samples.sample_id.isin(joint_calling_groups.sample_id)
+                    ].sample_id.unique()
+                ),
+            ),
+            *expand(
+                "results/individual_calls/{sample}.vcf.gz.csi",
+                sample=(
+                    samples.loc[
+                        samples.sample_id.isin(joint_calling_groups.sample_id)
+                    ].sample_id.unique()
+                ),
+            ),
+            *expand(
+                "results/joint_calls/{joint_calling_group}.vcf.gz.csi",
+                joint_calling_group=joint_calling_group_lists.index,
+            ),
+        ],
+    output:
+        calls=temp("results/merged_calls/all.unfiltered.vcf.gz"),
+    log:
+        "results/logs/bcftools_merge/bcftools_merge.log",
+    params:
+        config["bcftools_merge"]["params"] + " -Oz",  # optional parameters for bcftools concat (except -o)
+    wrapper:
+        "0.75.0/bio/bcftools/merge"
+
+
+
 rule bcftools_nomiss:
     input:
-        vcf="results/glnexus_gvcf/{joint_calling_group}.vcf.gz",
+        vcf=rules.bcftools_merge.output.calls,
     output:
         out="results/glnexus_gvcf/{joint_calling_group}.nomiss.vcf.gz",
     log:
