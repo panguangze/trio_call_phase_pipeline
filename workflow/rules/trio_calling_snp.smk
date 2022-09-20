@@ -52,22 +52,6 @@ rule glnexus:
         "> {output.vcf} "
 
 
-rule bcftools_index:
-    input:
-        "{vcffile}.vcf.gz",
-    output:
-        "{vcffile}.vcf.gz.csi",
-    params:
-        extra=config["bcftools_index"]["extra"] + " --threads {}".format(
-            config["bcftools_index"]["threads"]
-        ),
-    log:
-        "results/logs/bcftools_index/{vcffile}.log",
-    threads: config["bcftools_index"]["threads"]
-    wrapper:
-        "0.75.0/bio/bcftools/index"
-
-
 rule create_reheader_sample_file:
     input:
         joint_calling_groups=config["joint_calling_groups"],
@@ -102,67 +86,51 @@ rule update_sample_names:
     wrapper:
         "0.75.0/bio/bcftools/reheader"
 
-
-rule bcftools_merge:
+rule bcftools_index:
     input:
-        calls=[
-            *expand(
-                "results/calls/{sample}.vcf.gz",
-                sample=(
-                    samples.loc[
-                        ~samples.sample_id.isin(joint_calling_groups.sample_id)
-                    ].sample_id.unique()
-                ),
-            ),
-            *expand(
-                "results/individual_calls/{sample}.vcf.gz",
-                sample=(
-                    samples.loc[
-                        samples.sample_id.isin(joint_calling_groups.sample_id)
-                    ].sample_id.unique()
-                ),
-            ),
-            *expand(
-                "results/joint_calls/{joint_calling_group}.vcf.gz",
-                joint_calling_group=joint_calling_group_lists.index,
-            ),
-        ],
-        idxs=[
-            *expand(
-                "results/calls/{sample}.vcf.gz.csi",
-                sample=(
-                    samples.loc[
-                        ~samples.sample_id.isin(joint_calling_groups.sample_id)
-                    ].sample_id.unique()
-                ),
-            ),
-            *expand(
-                "results/individual_calls/{sample}.vcf.gz.csi",
-                sample=(
-                    samples.loc[
-                        samples.sample_id.isin(joint_calling_groups.sample_id)
-                    ].sample_id.unique()
-                ),
-            ),
-            *expand(
-                "results/joint_calls/{joint_calling_group}.vcf.gz.csi",
-                joint_calling_group=joint_calling_group_lists.index,
-            ),
-        ],
+        "results/joint_calls/{joint_calling_group}.vcf.gz",
     output:
-        calls=temp("results/merged_calls/all.unfiltered.vcf.gz"),
-    log:
-        "results/logs/bcftools_merge/bcftools_merge.log",
+        "results/joint_calls/{joint_calling_group}.vcf.gz.csi",
     params:
-        config["bcftools_merge"]["params"] + " -Oz",  # optional parameters for bcftools concat (except -o)
+        extra=config["bcftools_index"]["extra"] + " --threads {}".format(
+            config["bcftools_index"]["threads"]
+        ),
+    log:
+        "results/logs/bcftools_index/{joint_calling_group}.log",
+    threads: config["bcftools_index"]["threads"]
     wrapper:
-        "0.75.0/bio/bcftools/merge"
+        "0.75.0/bio/bcftools/index"
+
+
+# rule bcftools_merge:
+#     input:
+#         calls=[
+#             *expand(
+#                 "results/joint_calls/{joint_calling_group}.vcf.gz",
+#                 joint_calling_group=joint_calling_group_lists.index,
+#             ),
+#         ],
+#         idxs=[
+#             *expand(
+#                 "results/joint_calls/{joint_calling_group}.vcf.gz.csi",
+#                 joint_calling_group=joint_calling_group_lists.index,
+#             ),
+#         ],
+#     output:
+#         calls=temp("results/merged_calls/all.unfiltered.vcf.gz"),
+#     log:
+#         "results/logs/bcftools_merge/bcftools_merge.log",
+#     params:
+#         config["bcftools_merge"]["params"] + " -Oz",  # optional parameters for bcftools concat (except -o)
+#     wrapper:
+#         "0.75.0/bio/bcftools/merge"
 
 
 
 rule bcftools_nomiss:
     input:
-        vcf=rules.bcftools_merge.output.calls,
+        vcf="results/joint_calls/{joint_calling_group}.vcf.gz",
+        idx=rules.bcftools_index.output
     output:
         out="results/glnexus_gvcf/{joint_calling_group}.nomiss.vcf.gz",
     log:

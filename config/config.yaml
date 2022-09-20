@@ -2,9 +2,9 @@ samples: 'config/samples.tsv'
 joint_calling_groups: 'config/joint_calling_groups.tsv'
 
 ref:
-    fasta: 'Saccharomyces_cerevisiae.R64-1-1.dna_sm.toplevel.fa'
-    idx: 'Saccharomyces_cerevisiae.R64-1-1.dna_sm.toplevel.fa.fai'
-    bwa_idx: 'Saccharomyces_cerevisiae.R64-1-1.dna_sm.toplevel.fa.sa'
+    fasta: '/home/panguangze/t2t_ref/chm13v2.0.fa'
+    idx: '/home/panguangze/t2t_ref/chm13v2.0.fa.fai'
+    bwa_idx: '/home/panguangze/t2t_ref/chm13v2.0.fa.sa'
 
 bwa_index:
   mem_mb: 369000
@@ -12,12 +12,12 @@ bwa_index:
 fastp_se:
   adapter: ''
   extra: '--correction'
-  threads: 2
+  threads: 12
 
 fastp_pe:
   adapter: ''
   extra: '--correction'
-  threads: 2
+  threads: 12
 
 bwa_mem:
   wrapper: 'bwa/mem' # bwa/mem or bwa-mem2/mem
@@ -25,34 +25,34 @@ bwa_mem:
   sort: 'samtools'
   sort_order: 'coordinate'
   sort_extra: ''
-  threads: 8
+  threads: 12
 
 samtools_merge:
   params: ''
-  threads: 8
+  threads: 12
 
 samtools_index:
   params: ''
-
-deepvariant:
-  model: 'wgs'
-  extra: ''
-  params: ''
-  threads: 8
 
 deepvariant_gvcf:
   model: 'wgs'
   extra: ''
   params: ''
-  threads: 8
+  threads: 12
+
+deepvariant_gvcf:
+  model: 'wgs'
+  extra: ''
+  params: ''
+  threads: 12
 
 glnexus:
   config: 'DeepVariantWGS'
-  threads: 8
+  threads: 12
 
 bcftools_index:
   extra: ''
-  threads: 8
+  threads: 12
 
 bcftools_merge:
   params: '--force-samples'
@@ -60,18 +60,15 @@ bcftools_merge:
 bcftools_filter:
   filter: ''
 
-bcftools_sv_filter:
-  filter: '-e 'INFO/SVLEN>50000 || INFO/SVLEN<-50000 || (INFO/SVLEN<50 && INFO/SVLEN>0) || (INFO/SVLEN>-50 && INFO/SVLEN<0)''
-
 dysgu:
   bin_path: "/home/panguangze/miniconda3/envs/snakemake/bin/dysgu"
-  run_params: "-a --min-support 10 -v 2"
-  threads: 8
+  run_params: "-a --min-support 1 -v 2"
+  threads: 12
   merge_trio_params: "--merge-within True -v2"
 
-extracHairs:
+extractHairs:
   bin_path: "/home/panguangze/apps/usr/local/bin/ExtractHAIRs"
-  ngs_params: "--mate_at_same 1 --support_read_tag READNAMES --breakends 1 --mbq 18 --mmq 30 --ep 1"
+  ngs_params: " --mate_at_same 1 --support_read_tag READNAMES --breakends 1 --mbq 18 --mmq 30 --ep 1"
 
 specHap:
   bin_path: "/home/panguangze/apps/usr/local/bin/SpecHap"
@@ -81,7 +78,6 @@ other_bin:
   tabix: "/home/panguangze/apps/usr/local/bin/tabix"
   bgzip: "/home/panguangze/apps/usr/local/bin/bgzip"
 
-# seg_dup and simple_repeat in pedhap_dir is only for human t2t reference, you show replace your own version 
 pedHap:
   bin_path: "/home/panguangze/apps/usr/local/bin/pedHap"
-  run_params: "--ped /mnt/d/linux/cityu/pedHapCpp/test/hg/HG002_bk/trio.order --debug --seg_dup pedHapCpp/scripts/chm13v2.0_SD.bed --simple_repeat pedHapCpp/scripts/chm13.simpleRepeat.50.bed"
+  run_params: "--ped /mnt/d/linux/cityu/pedHapCpp/test/hg/HG002_bk/trio.order --debug --seg_dup xxx.bed --simple_repeat xxx.bed"
