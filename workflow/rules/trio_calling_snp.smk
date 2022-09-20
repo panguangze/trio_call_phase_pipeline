@@ -34,7 +34,7 @@ rule glnexus:
     log:
         "results/logs/glnexus/{joint_calling_group}/stdout.log",
     container:
-        "docker://quay.io/mlin/glnexus:v1.3.1"
+        "docker://kboltonlab/glnexus:v1.3.1"
     shell:
         "glnexus_cli "
         "--config DeepVariantWGS "
