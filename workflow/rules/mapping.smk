@@ -3,10 +3,10 @@ rule map_reads:
         reads=get_trimmed_reads,
         idx=config['ref']['bwa_idx'],
     output:
-        temp("results/mapped/{sample}-{unit}.sorted.bam"),
-        temp("results/mapped/{sample}-{unit}.sorted.bam.csi"),
+        temp("results/mapped/{sample}.{unit}.sorted.bam"),
+        temp("results/mapped/{sample}.{unit}.sorted.bam.csi"),
     log:
-        "results/logs/bwa_mem/{sample}-{unit}.log",
+        "results/logs/bwa_mem/{sample}.{unit}.log",
     params:
         index=lambda w, input: os.path.splitext(input.idx)[0],
         extra=config["bwa_mem"]["extra"] + " -R '@RG\\tID:foo\\tSM:{sample}\\tLB:library1'",
@@ -15,13 +15,13 @@ rule map_reads:
         sort_extra=config["bwa_mem"]["sort_extra"] + " --write-index",  # Extra args for samtools/picard.
     threads: config["bwa_mem"]["threads"]
     wrapper:
-        "0.75.0/bio/{}".format(config["bwa_mem"]["wrapper"])
+        "master/bio/{}".format(config["bwa_mem"]["wrapper"])
 
 
 rule samtools_merge:
     input:
         lambda w: expand(
-            "results/mapped/{sample}-{unit}.sorted.bam",
+            "results/mapped/{sample}.{unit}.sorted.bam",
             sample=w.sample,
             unit=samples.loc[w.sample].unit,
         ),
@@ -34,4 +34,4 @@ rule samtools_merge:
         config["samtools_merge"]["params"] + " --write-index",  # optional additional parameters as string
     threads: config["samtools_merge"]["threads"]  # Samtools takes additional threads through its option -@
     wrapper:
-        "0.75.0/bio/samtools/merge"
+        "master/bio/samtools/merge"

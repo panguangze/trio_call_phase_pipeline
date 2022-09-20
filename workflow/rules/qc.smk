@@ -2,15 +2,15 @@
 #     input:
 #         unpack(get_fastq),
 #     output:
-#         html="results/qc/fastqc/{sample}-{unit}.html",
-#         zip="results/qc/fastqc/{sample}-{unit}_fastqc.zip",
+#         html="results/qc/fastqc/{sample}.{unit}.html",
+#         zip="results/qc/fastqc/{sample}.{unit}_fastqc.zip",
 #     params:
 #         "--quiet",
 #     log:
-#         "results/logs/fastqc/{sample}-{unit}.log",
+#         "results/logs/fastqc/{sample}.{unit}.log",
 #     threads: 14
 #     wrapper:
-#         "0.75.0/bio/fastqc"
+#         "master/bio/fastqc"
 
 
 # rule samtools_stats:
@@ -24,7 +24,7 @@
 #     log:
 #         "results/logs/samtools_stats/{sample}.log",
 #     wrapper:
-#         "0.75.0/bio/samtools/stats"
+#         "master/bio/samtools/stats"
 
 
 # rule multiqc:
@@ -46,4 +46,4 @@
 #     log:
 #         "results/logs/multiqc.log",
 #     wrapper:
-#         "0.75.0/bio/multiqc"
+#         "master/bio/multiqc"

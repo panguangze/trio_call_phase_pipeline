@@ -10,7 +10,7 @@ rule concat_sv_snp:
     params:
         extra="-a",
     wrapper:
-        "0.75.0/bio/bcftools/concat"
+        "master/bio/bcftools/concat"
 
 rule bcftools_index:
     input:
@@ -25,7 +25,7 @@ rule bcftools_index:
         "results/logs/bcftools_index/{joint_calling_group}.log",
     threads: config["bcftools_index"]["threads"]
     wrapper:
-        "0.75.0/bio/bcftools/index"
+        "master/bio/bcftools/index"
 
 rule extractHairs:
     input:

@@ -6,11 +6,6 @@ rule deepvariant_gvcf:
         ref_idx=config['ref']['idx'],
     output:
         vcf="results/individual_calls/{sample}.vcf.gz",
-        report=report(
-            "results/individual_calls/{sample}.visual_report.html",
-            caption="../report/vcf.rst",
-            category="Calls",
-        ),
         gvcf="results/individual_calls/{sample}.g.vcf.gz",
     params:
         model=config["deepvariant_gvcf"]["model"],
@@ -19,7 +14,7 @@ rule deepvariant_gvcf:
     log:
         "results/logs/deepvariant_gvcf/{sample}/stdout.log",
     wrapper:
-        "0.75.0/bio/deepvariant"
+        "master/bio/deepvariant"
 
 
 rule glnexus:
@@ -84,7 +79,7 @@ rule update_sample_names:
         extra="",
         view_extra="-O z",
     wrapper:
-        "0.75.0/bio/bcftools/reheader"
+        "master/bio/bcftools/reheader"
 
 rule bcftools_index:
     input:
@@ -99,7 +94,7 @@ rule bcftools_index:
         "results/logs/bcftools_index/{joint_calling_group}.log",
     threads: config["bcftools_index"]["threads"]
     wrapper:
-        "0.75.0/bio/bcftools/index"
+        "master/bio/bcftools/index"
 
 
 # rule bcftools_merge:
@@ -123,7 +118,7 @@ rule bcftools_index:
 #     params:
 #         config["bcftools_merge"]["params"] + " -Oz",  # optional parameters for bcftools concat (except -o)
 #     wrapper:
-#         "0.75.0/bio/bcftools/merge"
+#         "master/bio/bcftools/merge"
 
 
 
@@ -138,7 +133,7 @@ rule bcftools_nomiss:
     params:
         extra="-g ^miss -Oz",
     wrapper:
-        "0.75.0/bio/bcftools/view"
+        "master/bio/bcftools/view"
 
 # rule bcftools_filter:
 #     input:
@@ -151,4 +146,4 @@ rule bcftools_nomiss:
 #         filter=config["bcftools_filter"]["filter"],
 #         extra="",
 #     wrapper:
-#         "0.75.0/bio/bcftools/filter"
+#         "master/bio/bcftools/filter"
