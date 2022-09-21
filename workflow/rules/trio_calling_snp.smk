@@ -6,6 +6,7 @@ rule deepvariant_gvcf:
     output:
         vcf="results/individual_calls/{sample}.vcf.gz",
         gvcf="results/individual_calls/{sample}.g.vcf.gz",
+        tmp_dir=temp(directory("results/individual_calls/{sample}_tmp")),
     params:
         model=config["deepvariant_gvcf"]["model"],
         extra=config["deepvariant_gvcf"]["extra"],
@@ -17,10 +18,11 @@ rule deepvariant_gvcf:
     shell:
         "run_deepvariant "
         "--model_type {params.model} "
-        "--ref {params.ref} "
+        "--ref {input.ref} "
         "--reads {input.bam} "
         "--output_vcf {output.vcf} "
         "--num_shards {threads}  "
+        "--intermediate_results_dir {output.tmp_dir} "
         "--output_gvcf {output.gvcf} 2> {log}"
 
 rule glnexus:
