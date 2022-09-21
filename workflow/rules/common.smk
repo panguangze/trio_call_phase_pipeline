@@ -22,13 +22,13 @@ samples.index = samples.index.set_levels(
 
 
 
-def get_fastq(wildcards):
+def get_bam(wildcards):
     """Get fastq files of given sample-unit."""
-    fastqs = samples.loc[(wildcards.sample, wildcards.unit), ["fq1", "fq2"]].dropna()
-    print(fastqs)
+    fastqs = samples.loc[(wildcards.sample, wildcards.unit), ["bam"]].dropna()
+    # print(fastqs)
     if len(fastqs) == 2:
         return {"sample": [fastqs.fq1, fastqs.fq2]}
-    return {"sample": [fastqs.fq1]}
+    return {"sample": [fastqs.bam]}
 
 
 def is_single_end(sample, unit):
