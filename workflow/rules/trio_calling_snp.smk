@@ -12,9 +12,16 @@ rule deepvariant_gvcf:
     threads: config["deepvariant_gvcf"]["threads"]
     log:
         "results/logs/deepvariant_gvcf/{sample}/stdout.log",
-    wrapper:
-        "master/bio/deepvariant"
-
+    singularity:
+        "docker://google/deepvariant:latest"
+    shell:
+        "run_deepvariant "
+        "--model_type {params.model} "
+        "--ref {params.ref} "
+        "--reads {input.bam} "
+        "--output_vcf {output.vcf} "
+        "--num_shards {threads}  "
+        "--output_gvcf {output.gvcf} 2> {log}"
 
 rule glnexus:
     input:
@@ -32,7 +39,7 @@ rule glnexus:
     threads: config["glnexus"]["threads"]
     log:
         "results/logs/glnexus/{joint_calling_group}/stdout.log",
-    container:
+    singularity:
         "docker://quay.io/mlin/glnexus:v1.3.1"
     shell:
         "glnexus_cli "

@@ -35,7 +35,7 @@ samtools_index:
   params: ''
 
 deepvariant_gvcf:
-  model: 'wgs'
+  model: 'WGS'
   extra: ''
   params: ''
   threads: 12
