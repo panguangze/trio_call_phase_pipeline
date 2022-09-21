@@ -3,7 +3,6 @@ rule deepvariant_gvcf:
         bam=rules.samtools_merge.output.bam,
         idx=rules.samtools_merge.output.idx,
         ref=config['ref']['fasta'],
-        ref_idx=config['ref']['idx'],
     output:
         vcf="results/individual_calls/{sample}.vcf.gz",
         gvcf="results/individual_calls/{sample}.g.vcf.gz",
@@ -34,7 +33,7 @@ rule glnexus:
     log:
         "results/logs/glnexus/{joint_calling_group}/stdout.log",
     container:
-        "docker://kboltonlab/glnexus:v1.3.1"
+        "docker://quay.io/mlin/glnexus:v1.3.1"
     shell:
         "glnexus_cli "
         "--config DeepVariantWGS "

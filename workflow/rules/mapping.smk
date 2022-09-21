@@ -10,7 +10,7 @@ rule map_reads:
     params:
         index=lambda w, input: os.path.splitext(input.idx)[0],
         extra=config["bwa_mem"]["extra"] + " -R '@RG\\tID:foo\\tSM:{sample}\\tLB:library1'",
-        sort=config["bwa_mem"]["sort"],  # Can be 'none', 'samtools' or 'picard'.
+        sorting=config["bwa_mem"]["sorting"],  # Can be 'none', 'samtools' or 'picard'.
         sort_order=config["bwa_mem"]["sort_order"],  # Can be 'queryname' or 'coordinate'.
         sort_extra=config["bwa_mem"]["sort_extra"] + " --write-index",  # Extra args for samtools/picard.
     threads: config["bwa_mem"]["threads"]
