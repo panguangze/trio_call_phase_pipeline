@@ -11,24 +11,18 @@ configfile: "config/config.yaml"
 
 validate(config, schema="../schemas/config.schema.yaml")
 
-samples = pd.read_table(config["samples"], dtype=str).set_index(
-    ["sample_id", "unit"], drop=False
-)
-samples.index = samples.index.set_levels(
-    [i.astype(str) for i in samples.index.levels]
-)  # enforce str in index
-
+samples = pd.read_table(config["samples"], dtype=str, index_col=0)
 ## Helper functions
 
 
 
 def get_bam(wildcards):
     """Get fastq files of given sample-unit."""
-    fastqs = samples.loc[(wildcards.sample, wildcards.unit), ["bam"]].dropna()
+    fastqs = samples.loc[(wildcards.sample), ["bam"]].dropna()
     # print(fastqs)
     if len(fastqs) == 2:
         return {"sample": [fastqs.fq1, fastqs.fq2]}
-    return {"sample": [fastqs.bam]}
+    return fastqs.bam
 
 
 def is_single_end(sample, unit):

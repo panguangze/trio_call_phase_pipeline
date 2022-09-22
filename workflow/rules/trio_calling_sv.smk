@@ -2,7 +2,7 @@ def parse_sample_names(w,input):
     return list(joint_calling_group_lists.loc[w.joint_calling_group])
 rule dysgu_run:
     input:
-        bam=unpack(get_bam),
+        bam=get_bam,
     output:
         # gvcfs=expand("results/individual_calls/{joint_calling_group}_gvcf"),
         # vcfs=directory("results/individual_calls/{joint_calling_group}_vcf"),

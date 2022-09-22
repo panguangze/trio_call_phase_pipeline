@@ -1,6 +1,6 @@
 rule deepvariant_gvcf:
     input:
-        bam=unpack(get_bam),
+        bam=get_bam,
         ref=config['ref']['fasta'],
     output:
         vcf="results/individual_calls/{sample}.vcf.gz",
