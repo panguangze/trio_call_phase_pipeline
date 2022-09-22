@@ -32,11 +32,11 @@ rule extractHairs:
         vcf="results/concat_sv_snp/{joint_calling_group}.concat.vcf.gz",
         vcf_csi="results/concat_sv_snp/{joint_calling_group}.concat.vcf.gz.csi",
         bams=lambda w: expand(
-            "results/mapped/{sample}.bam",
+            "results/merged/{sample}.bam",
             sample=joint_calling_group_lists.loc[w.joint_calling_group],
         ),
         idxs=lambda w: expand(
-            "results/mapped/{sample}.bam.csi",
+            "results/merged/{sample}.bam.csi",
             sample=joint_calling_group_lists.loc[w.joint_calling_group],
         ),
     output:

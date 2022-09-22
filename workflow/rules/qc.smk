@@ -2,12 +2,12 @@
 #     input:
 #         unpack(get_fastq),
 #     output:
-#         html="results/qc/fastqc/{sample}.{unit}.html",
-#         zip="results/qc/fastqc/{sample}.{unit}_fastqc.zip",
+#         html="results/qc/fastqc/{sample}-{unit}.html",
+#         zip="results/qc/fastqc/{sample}-{unit}_fastqc.zip",
 #     params:
 #         "--quiet",
 #     log:
-#         "results/logs/fastqc/{sample}.{unit}.log",
+#         "results/logs/fastqc/{sample}-{unit}.log",
 #     threads: 14
 #     wrapper:
 #         "master/bio/fastqc"
