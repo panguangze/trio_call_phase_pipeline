@@ -91,7 +91,7 @@ rule bcftools_index:
         "results/logs/bcftools_index/{vcffile}.log",
     threads: config["bcftools_index"]["threads"]
     wrapper:
-        "0.75.0/bio/bcftools/index"
+        "master/bio/bcftools/index"
 
 
 rule bcftools_nomiss:
@@ -104,7 +104,7 @@ rule bcftools_nomiss:
     params:
         extra="-g ^miss -Oz",
     wrapper:
-        "0.75.0/bio/bcftools/view"
+        "master/bio/bcftools/view"
 
 # rule bcftools_filter:
 #     input:
@@ -117,4 +117,4 @@ rule bcftools_nomiss:
 #         filter=config["bcftools_filter"]["filter"],
 #         extra="",
 #     wrapper:
-#         "0.75.0/bio/bcftools/filter"
+#         "master/bio/bcftools/filter"

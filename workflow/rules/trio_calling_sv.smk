@@ -61,7 +61,7 @@ rule bcftools_sv_filter:
         filter=config["bcftools_filter"]["filter"],
         extra="",
     wrapper:
-        "0.75.0/bio/bcftools/filter"
+        "master/bio/bcftools/filter"
 
 rule bcftools_sv_index:
     input:
@@ -76,4 +76,4 @@ rule bcftools_sv_index:
         "results/logs/bcftools_index/{joint_calling_group}_sv.log",
     threads: config["bcftools_index"]["threads"]
     wrapper:
-        "0.75.0/bio/bcftools/index"
+        "master/bio/bcftools/index"
