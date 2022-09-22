@@ -3,11 +3,7 @@ def parse_sample_names(w,input):
 rule deepvariant_gvcf:
     input:
         bams=lambda w: expand(
-            "results/mapped/{sample}.bam",
-            sample=joint_calling_group_lists.loc[w.joint_calling_group],
-        ),
-        idxs=lambda w: expand(
-            "results/mapped/{sample}.bam.csi",
+            get_bam,
             sample=joint_calling_group_lists.loc[w.joint_calling_group],
         ),
         ref=config['ref']['fasta'],

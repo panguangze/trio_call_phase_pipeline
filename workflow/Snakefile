@@ -22,9 +22,6 @@ rule all:
         ),
 
 include: "rules/common.smk"
-include: "rules/trimming.smk"
-include: "rules/mapping.smk"
 include: "rules/trio_calling_snp.smk"
 include: "rules/trio_calling_sv.smk"
 include: "rules/phase.smk"
-include: "rules/qc.smk"
